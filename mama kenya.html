@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#edf3e9" />
+    <title>Open Mwangis Shop Inventory System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="auth-screen">
+      <section class="auth-card panel" aria-labelledby="page-title">
+        <p class="eyebrow">Fresh produce control</p>
+        <h1 id="page-title">Mwangis Shop Inventory System</h1>
+        <p id="status" class="auth-description" aria-live="polite">
+          Connecting to your local system...
+        </p>
+        <p id="instructions" class="auth-message" hidden>
+          The system server is not running yet. Double-click
+          <strong>start-app.bat</strong> in your project folder. This page will
+          open the system once the server is available.
+        </p>
+        <button id="retry" class="primary-button" type="button" hidden>
+          Try again
+        </button>
+      </section>
+    </main>
+
+    <script>
+      const appUrl = "http://127.0.0.1:5000/";
+      const status = document.getElementById("status");
+      const instructions = document.getElementById("instructions");
+      const retryButton = document.getElementById("retry");
+
+      async function openSystem() {
+        retryButton.hidden = true;
+        status.textContent = "Connecting to your local system...";
+
+        try {
+          await fetch(appUrl, { mode: "no-cors", cache: "no-store" });
+          window.location.replace(appUrl);
+        } catch {
+          status.textContent = "The system is not running yet.";
+          instructions.hidden = false;
+          retryButton.hidden = false;
+        }
+      }
+
+      retryButton.addEventListener("click", openSystem);
+      openSystem();
+    </script>
+  </body>
+</html>

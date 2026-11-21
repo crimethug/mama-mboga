@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2d7d46" />
+    <meta
+      name="description"
+      content="Manage Mwangis Shop Inventory System, record sales, and get stock alerts — online or offline."
+    />
+    <title>Mwangis Shop Inventory System</title>
+
+    <link rel="icon" type="image/svg+xml" href="icon.svg" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <!-- ===================== Floating tools ===================== -->
+    <div class="app-tools">
+      <span id="connectionStatus" class="network-status" role="status">
+        Checking connection...
+      </span>
+      <button id="installAppBtn" class="ghost-button" type="button" hidden>
+        Install app
+      </button>
+    </div>
+
+    <!-- ===================== Auth screen ===================== -->
+    <main id="authScreen" class="auth-screen">
+      <div class="auth-backdrop" aria-hidden="true"></div>
+      <section class="auth-card panel" aria-labelledby="authTitle">
+        <p class="eyebrow">Fresh produce control</p>
+        <h1 id="authTitle">Welcome back</h1>
+        <p id="authDescription" class="auth-description">
+          Log in to manage your inventory.
+        </p>
+
+        <form id="authForm" class="auth-form" autocomplete="on">
+          <label for="authUsername">
+            <span>Username</span>
+            <input
+              id="authUsername"
+              name="username"
+              type="text"
+              minlength="3"
+              maxlength="32"
+              pattern="[A-Za-z0-9_]{3,32}"
+              title="Use 3–32 letters, numbers, or underscores."
+              placeholder="e.g. mama_mboga"
+              autocomplete="username"
+              required
+            />
+          </label>
+          <label for="authPassword">
+            <span>Password</span>
+            <input
+              id="authPassword"
+              name="password"
+              type="password"
+              minlength="8"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+          <p id="authMessage" class="auth-message" aria-live="polite"></p>
+          <button id="authSubmitBtn" class="primary-button" type="submit">
+            Log in
+          </button>
+        </form>
+
+        <button id="authToggleBtn" class="auth-toggle" type="button">
+          New here? Create an account
+        </button>
+      </section>
+    </main>
+
+    <!-- ===================== App shell ===================== -->
+    <div id="appShell" class="app-shell hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Fresh produce control</p>
+          <h1>Mwangis Shop Inventory System</h1>
+        </div>
+        <div class="topbar-actions">
+          <span id="currentUser" class="current-user"></span>
+          <a class="ghost-button inventory-back" href="/">Back to dashboard</a>
+          <button id="resetAllBtn" class="ghost-button" type="button">
+            Reset demo data
+          </button>
+          <button id="logoutBtn" class="ghost-button" type="button">
+            Log out
+          </button>
+        </div>
+      </header>
+
+      <section class="hero-banner" aria-labelledby="hero-title">
+        <img
+          src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&amp;fit=crop&amp;w=1600&amp;q=85"
+          alt="Colorful fresh produce displayed at a market"
+          fetchpriority="high"
+        />
+        <div class="hero-copy">
+          <p class="hero-kicker">A brighter way to run your shop</p>
+          <h2 id="hero-title">Fresh stock. Happy customers.</h2>
+          <p>Keep your produce, sales, and daily stock checks all in one place.</p>
+          <a class="hero-link" href="/inventory">
+            Manage your stock <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <section class="stats-grid" aria-label="Inventory summary">
+        <article class="stat-card accent-green">
+          <span class="label">Total items</span>
+          <strong id="totalItems">0</strong>
+        </article>
+        <article class="stat-card accent-amber">
+          <span class="label">Low stock</span>
+          <strong id="lowStockCount">0</strong>
+        </article>
+        <article class="stat-card accent-blue">
+          <span class="label">Inventory value</span>
+          <strong id="inventoryValue">KES 0</strong>
+        </article>
+        <article class="stat-card accent-purple">
+          <span class="label">Units sold today</span>
+          <strong id="soldCount">0</strong>
+        </article>
+      </section>
+
+      <!-- Stock alerts -->
+      <section
+        class="alert-panel panel"
+        aria-labelledby="alert-settings-title"
+      >
+        <div class="panel-header">
+          <h2 id="alert-settings-title">Stock alerts</h2>
+          <button
+            id="enableNotificationsBtn"
+            class="small-button"
+            type="button"
+          >
+            Enable browser alert
+          </button>
+        </div>
+        <div class="alert-list-wrap">
+          <p class="alert-summary">Low stock items</p>
+          <ul id="lowStockList" class="alert-list"></ul>
+        </div>
+      </section>
+
+      <!-- Main content -->
+      <main class="content-grid">
+        <!-- Add / edit product -->
+        <section class="panel" aria-labelledby="product-form-title">
+          <div class="panel-header">
+            <h2 id="product-form-title">Add product</h2>
+          </div>
+
+          <form id="productForm" class="product-form" autocomplete="off">
+            <div class="field-grid">
+              <label>
+                <span>Product name</span>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="e.g. Tomatoes"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Jina kwa Kiswahili <em>(optional)</em></span>
+                <input
+                  id="nameSw"
+                  name="nameSw"
+                  type="text"
+                  placeholder="e.g. Nyanya"
+                />
+              </label>
+
+              <label>
+                <span>Category</span>
+                <select id="category" name="category" required>
+                  <option value="">Select category</option>
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Herbs">Herbs</option>
+                  <option value="Tubers">Tubers</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Dairy">Dairy</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Quantity</span>
+                <input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="0"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Date stock was bought</span>
+                <input
+                  id="purchaseDate"
+                  name="purchase_date"
+                  type="date"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Cost price (KES)</span>
+                <input
+                  id="unitCost"
+                  name="unitCost"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="0"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Selling price (KES)</span>
+                <input
+                  id="sellPrice"
+                  name="sellPrice"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="0"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Reorder level</span>
+                <input
+                  id="reorderLevel"
+                  name="reorderLevel"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="10"
+                  required
+                />
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-button">
+                Save product
+              </button>
+              <button
+                id="cancelEditBtn"
+                type="button"
+                class="secondary-button hidden"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Inventory table -->
+        <section class="panel table-panel" aria-labelledby="inventory-list-title">
+          <div class="panel-header toolbar">
+            <h2 id="inventory-list-title">Inventory list</h2>
+            <div class="toolbar-controls">
+              <label class="search-box">
+                <span class="sr-only">Search products</span>
+                <input
+                  id="searchInput"
+                  type="search"
+                  placeholder="Search items..."
+                />
+              </label>
+              <select id="categoryFilter" aria-label="Filter by category">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Qty</th>
+                  <th>Bought on</th>
+                  <th>Selling price</th>
+                  <th>Reorder</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <!-- Daily sales receipt -->
+      <section
+        id="reportsPanel"
+        class="panel reports-panel hidden"
+        aria-labelledby="reports-title"
+      >
+        <div class="panel-header">
+          <h2 id="reports-title">Today's sales</h2>
+          <button id="printReportBtn" class="small-button" type="button">
+            Print receipt
+          </button>
+        </div>
+        <div class="reports-grid">
+          <div>
+            <p class="alert-summary">Items sold today</p>
+            <ul id="dailyItemsList" class="alert-list"></ul>
+          </div>
+          <div class="report-total">
+            <span class="label">Total revenue</span>
+            <strong id="dailyTotal">KES 0</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent sales -->
+      <section class="panel sales-panel" aria-labelledby="sales-title">
+        <div class="panel-header">
+          <h2 id="sales-title">Recent sales</h2>
+          <button id="refreshSalesBtn" class="small-button" type="button">
+            Refresh
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Unit price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody">
+              <tr>
+                <td colspan="5">No sales recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== Sell modal ===================== -->
+    <dialog id="sellDialog" class="sell-dialog">
+      <form method="dialog" id="sellForm">
+        <h2 id="sellTitle">Record sale</h2>
+        <p id="sellItemName" class="auth-description"></p>
+        <label>
+          <span>Quantity sold</span>
+          <input
+            id="sellQuantity"
+            type="number"
+            min="1"
+            value="1"
+            required
+          />
+        </label>
+        <p id="sellError" class="auth-message" aria-live="polite"></p>
+        <div class="form-actions">
+          <button type="submit" class="primary-button" value="confirm">
+            Confirm sale
+          </button>
+          <button
+            type="button"
+            class="secondary-button"
+            id="sellCancelBtn"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================== Toast ===================== -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

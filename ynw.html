@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Up Mwangis Shop Inventory System in VS Code</title>
+</head>
+<body>
+  <main>
+    <h1>How to Create the Folder Structure in VS Code</h1>
+
+    <h2>1. Create the main project folder</h2>
+    <ol>
+      <li>Open VS Code.</li>
+      <li>Select <strong>File → Open Folder...</strong>.</li>
+      <li>Create a folder named <code>mama_mboga</code> and open it.</li>
+    </ol>
+
+    <h2>2. Create the folders</h2>
+    <p>In the Explorer panel, create these folders:</p>
+    <ol>
+      <li>Create <code>templates</code> inside <code>mama_mboga</code>.</li>
+      <li>Create <code>static</code> inside <code>mama_mboga</code>.</li>
+      <li>Create <code>css</code> inside <code>static</code>.</li>
+      <li>Create <code>js</code> inside <code>static</code>.</li>
+    </ol>
+
+    <h2>3. Create the files</h2>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Location</th>
+          <th scope="col">File name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Project root (<code>mama_mboga</code>)</td><td><code>app.py</code></td></tr>
+        <tr><td>Project root</td><td><code>requirements.txt</code></td></tr>
+        <tr><td>Inside <code>templates</code></td><td><code>index.html</code></td></tr>
+        <tr><td>Inside <code>static/css</code></td><td><code>style.css</code></td></tr>
+        <tr><td>Inside <code>static/js</code></td><td><code>app.js</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Project structure</h2>
+    <pre><code>mama_mboga/
+├── app.py
+├── requirements.txt
+├── templates/
+│   └── index.html
+└── static/
+    ├── css/
+    │   └── style.css
+    └── js/
+        └── app.js</code></pre>
+
+    <h2>4. Run the app</h2>
+    <ol>
+      <li>The project files are now in their matching folders shown above.</li>
+      <li>Open the VS Code terminal with <kbd>Ctrl</kbd> + <kbd>`</kbd>, or select <strong>Terminal → New Terminal</strong>.</li>
+      <li>Install the dependencies and start the application:</li>
+    </ol>
+    <pre><code>pip install -r requirements.txt
+python app.py</code></pre>
+    <p>Keep the terminal open, then visit <code>http://127.0.0.1:5000</code> in your browser. Create an account on your first visit, then log in.</p>
+  </main>
+</body>
+</html>

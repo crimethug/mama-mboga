@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mwangis Shop Inventory System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Fresh produce control</p>
+          <h1>Mwangis Shop Inventory System</h1>
+        </div>
+        <button id="resetAllBtn" class="ghost-button" type="button">Reset demo data</button>
+      </header>
+
+      <section class="stats-grid" aria-label="Inventory summary">
+        <article class="stat-card accent-green">
+          <span class="label">Total items</span>
+          <strong id="totalItems">0</strong>
+        </article>
+        <article class="stat-card accent-amber">
+          <span class="label">Low stock</span>
+          <strong id="lowStockCount">0</strong>
+        </article>
+        <article class="stat-card accent-blue">
+          <span class="label">Inventory value</span>
+          <strong id="inventoryValue">KES 0</strong>
+        </article>
+        <article class="stat-card accent-purple">
+          <span class="label">Units sold</span>
+          <strong id="soldCount">0</strong>
+        </article>
+      </section>
+
+      <section class="alert-panel panel" aria-labelledby="alert-settings-title">
+        <div class="panel-header">
+          <h2 id="alert-settings-title">Stock alerts</h2>
+          <button id="enableNotificationsBtn" class="small-button" type="button">Enable browser alert</button>
+        </div>
+
+        <div class="alert-list-wrap">
+          <p class="alert-summary">Low stock items</p>
+          <ul id="lowStockList" class="alert-list"></ul>
+        </div>
+      </section>
+
+      <main class="content-grid">
+        <section class="panel" aria-labelledby="product-form-title">
+          <div class="panel-header">
+            <h2 id="product-form-title">Add product</h2>
+          </div>
+
+          <form id="productForm" class="product-form">
+            <div class="field-grid">
+              <label>
+                <span>Product name</span>
+                <input id="name" name="name" type="text" placeholder="e.g. Tomatoes" required />
+              </label>
+
+              <label>
+                <span>Category</span>
+                <select id="category" name="category" required>
+                  <option value="">Select category</option>
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Herbs">Herbs</option>
+                  <option value="Tubers">Tubers</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Dairy">Dairy</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Quantity</span>
+                <input id="quantity" name="quantity" type="number" min="0" step="1" value="0" required />
+              </label>
+
+              <label>
+                <span>Unit cost (KES)</span>
+                <input id="unitCost" name="unitCost" type="number" min="0" step="1" value="0" required />
+              </label>
+
+              <label>
+                <span>Reorder level</span>
+                <input id="reorderLevel" name="reorderLevel" type="number" min="0" step="1" value="10" required />
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-button">Save product</button>
+              <button id="cancelEditBtn" type="button" class="secondary-button hidden">Cancel</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel table-panel" aria-labelledby="inventory-list-title">
+          <div class="panel-header toolbar">
+            <h2 id="inventory-list-title">Inventory list</h2>
+            <div class="toolbar-controls">
+              <label class="search-box">
+                <span class="sr-only">Search products</span>
+                <input id="searchInput" type="search" placeholder="Search items..." />
+              </label>
+              <select id="categoryFilter" aria-label="Filter by category">
+                <option value="all">All categories</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Qty</th>
+                  <th>Cost</th>
+                  <th>Reorder</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
